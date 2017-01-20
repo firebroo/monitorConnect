@@ -6,11 +6,15 @@
 #include <linux/fs.h>
 
 static void
-ip_to_str (int ip, char *buf)
+long2ip (long ip, char *buf)
 {
-    sprintf (buf, "%d.%d.%d.%d", ip >> 24, (ip & 0x00FF0000) >> 16,
-	        (ip & 0x0000FF00) >> 8, (ip & 0x000000FF));
+    sprintf (buf, "%ld.%ld.%ld.%ld", 
+                ((0xFF  << 24) & ip) >> 24, 
+                ((0xFF << 16) & ip) >> 16,
+                ((0xFF << 8) & ip) >> 8, 
+                ip & 0xFF);
 }
+
 
 static long
 do_sys_connect (int fd, struct sockaddr __user * uservaddr, int addrlen)
@@ -19,7 +23,7 @@ do_sys_connect (int fd, struct sockaddr __user * uservaddr, int addrlen)
     char                 buf[1024];
  
     in = (struct sockaddr_in *) uservaddr;
-    ip_to_str (htonl ((in->sin_addr).s_addr), buf);
+    long2ip (htonl ((in->sin_addr).s_addr), buf);
     /* filter not tcp and port equal 0 */
     if (in->sin_family == AF_INET && in->sin_port != 0) {
         printk (KERN_INFO

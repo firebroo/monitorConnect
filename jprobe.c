@@ -27,8 +27,13 @@ do_sys_connect (int fd, struct sockaddr __user * uservaddr, int addrlen)
     /* filter not tcp and port equal 0 */
     if (in->sin_family == AF_INET && in->sin_port != 0) {
         printk (KERN_INFO
-	        "jprobe: fd = %d, address = %s, port = %d, addrlen = %d\n", fd,
-	        buf, htons (in->sin_port), addrlen);
+	        "jprobe: task = %s, pid = %d, fd = %d, address = %s, port = %d, addrlen = %d\n",
+            current->comm,
+            current->pid,
+            fd,
+	        buf, 
+            htons (in->sin_port), 
+            addrlen);
     }
     jprobe_return ();
     return 0;
